@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SixthSenseAI - Accessibility App</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Accessibility Application for Visually Impaired">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="SixthSenseAI">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icon-512.png">
+    <link rel="icon" type="image/svg+xml" href="/images/icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512.png">
+    <!-- Add Leaflet CSS and JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Camera Access Permissions -->
+    <meta http-equiv="permissions-policy" content="camera=*, microphone=*">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="container">
+                <h1>SixthSenseAI</h1>
+                <p>Accessibility Application for Visually Impaired</p>
+                
+                <div class="user-selection">
+                    <h2>Select User Type</h2>
+                    <div class="button-container">
+                        <button id="client-btn" class="selection-btn client-btn">
+                            <div class="btn-icon">👤</div>
+                            <span>Client</span>
+                            <p class="btn-description">For visually impaired users with gesture controls</p>
+                        </button>
+                        
+                        <button id="admin-btn" class="selection-btn admin-btn">
+                            <div class="btn-icon">🛠️</div>
+                            <span>Admin</span>
+                            <p class="btn-description">For assistants and support providers</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client App Interface -->
+        <div id="main-screen" class="screen">
+            <header>
+                <h2 id="screen-title">SixthSenseAI</h2>
+                <span id="user-info">Client Mode</span>
+            </header>
+            
+            <div class="client-dashboard">
+                <!-- Network Status -->
+                <div class="status-bar">
+                    <div class="network-status">
+                        <span class="wifi-icon">📶</span>
+                        <span id="network-status">Network: Good</span>
+                    </div>
+                    <div class="battery-status">
+                        <span class="battery-icon">🔋</span>
+                        <span id="battery-level">100%</span>
+                    </div>
+                </div>
+
+                <!-- Features Grid -->
+                <div class="features-grid">
+                    <div class="feature-card" id="vision-feature">
+                        <div class="feature-icon">👁️</div>
+                        <h3>AI Vision</h3>
+                        <p>Swipe Left</p>
+                        <small>Describes your surroundings</small>
+                    </div>
+                    
+                    <div class="feature-card" id="time-feature">
+                        <div class="feature-icon">🕒</div>
+                        <h3>Time & Date</h3>
+                        <p>Swipe Right</p>
+                        <small>Current time and date</small>
+                    </div>
+                    
+                    <div class="feature-card" id="message-feature">
+                        <div class="feature-icon">🗣️</div>
+                        <h3>Send Message</h3>
+                        <p>Swipe Up</p>
+                        <small>Voice message to admin</small>
+                    </div>
+                    
+                    <div class="feature-card" id="read-feature">
+                        <div class="feature-icon">📩</div>
+                        <h3>Read Message</h3>
+                        <p>Swipe Down</p>
+                        <small>Listen to admin messages</small>
+                    </div>
+                    
+                    <div class="feature-card" id="sos-feature">
+                        <div class="feature-icon">🆘</div>
+                        <h3>SOS Alert</h3>
+                        <p>Hold Screen</p>
+                        <small>Emergency assistance</small>
+                    </div>
+
+                    <div class="feature-card" id="help-feature">
+                        <div class="feature-icon">❓</div>
+                        <h3>Help Guide</h3>
+                        <p>Double Tap</p>
+                        <small>Voice instructions</small>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button id="quick-sos" class="action-button sos-button">
+                        <span class="action-icon">🆘</span>
+                        Emergency SOS
+                    </button>
+                    <button id="quick-help" class="action-button help-button">
+                        <span class="action-icon">🔊</span>
+                        Voice Help
+                    </button>
+                </div>
+            </div>
+
+            <!-- Message Screen (Hidden by default) -->
+            <div id="message-screen" class="screen hidden">
+                <div class="message-header">
+                    <button id="message-back-btn" class="back-button" aria-label="Go back to main screen">
+                        <span class="back-icon">←</span> Back
+                    </button>
+                    <h2>Messages</h2>
+                </div>
+                <div id="messages-container" class="messages-container">
+                    <!-- Messages will be added here -->
+                    <div class="no-messages">No messages yet. Start a conversation!</div>
+                </div>
+                <div class="message-input">
+                    <textarea id="message-text" placeholder="Double-tap to record your message"></textarea>
+                    <button id="send-btn" aria-label="Send message">📤</button>
+                </div>
+            </div>
+            
+            <!-- SOS Screen (Hidden by default) -->
+            <div id="sos-screen" class="screen hidden">
+                <h2>SOS Activated</h2>
+                <p>Emergency contacts are being notified.</p>
+                <button id="cancel-sos-btn" class="btn">Cancel SOS</button>
+            </div>
+        </div>
+        
+        <!-- Admin Dashboard -->
+        <div id="admin-screen" class="screen">
+            <div class="admin-dashboard">
+                <div class="greeting-header">
+                    <div class="greeting-content">
+                        <h2>Good Afternoon</h2>
+                        <p>Admin</p>
+                    </div>
+                    <div class="settings-icon">
+                        <span class="sun-icon">⚙️</span>
+                    </div>
+                </div>
+                
+                <div class="time-notifications">
+                    <div class="time-display">
+                        <span class="time-icon">⏱</span>
+                        <span id="current-time">16:37</span>
+                    </div>
+                </div>
+                
+                <div class="sos-section">
+                    <button id="sos-info-btn" class="sos-btn">
+                        SOS <span class="info-icon">ⓘ</span>
+                    </button>
+                </div>
+                
+                <div class="client-info-section">
+                    <h3>Real Time Client Information</h3>
+                    <div class="client-details">
+                        <div class="client-device">
+                            <span class="user-icon">👤</span>
+                            <div class="device-info">
+                                <span class="device-name">motorola edge 50 pro</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-buttons">
+                    <button id="handsign-prediction-btn" class="admin-action-btn">
+                        <span class="btn-text">HandSign Prediction</span>
+                        <span class="hand-icon">✋</span>
+                    </button>
+                    
+                    <button id="change-role-btn" class="admin-action-btn">
+                        <span class="btn-text">Change Role</span>
+                        <span class="infinity-icon">∞</span>
+                    </button>
+                    
+                    <button id="inbox-btn" class="admin-action-btn">
+                        <span class="btn-text">Inbox</span>
+                        <span class="mail-icon">✉️</span>
+                    </button>
+                    
+                    <button id="send-message-btn" class="admin-action-btn">
+                        <span class="btn-text">Send Message</span>
+                        <span class="send-icon">➡️</span>
+                    </button>
+                    
+                    <button id="track-clients-btn" class="admin-action-btn">
+                        <span class="btn-text">Track Clients</span>
+                        <span class="location-icon">📍</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div id="admin-password-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Authentication</h2>
+            <div class="form-group">
+                <label for="admin-password">Password</label>
+                <input type="password" id="admin-password" placeholder="Enter admin password">
+            </div>
+            <div class="modal-buttons">
+                <button id="admin-password-cancel" class="btn cancel-btn">Cancel</button>
+                <button id="admin-password-submit" class="btn submit-btn">Submit</button>
+            </div>
+            <p id="admin-password-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="password-reset-modal" class="modal">
+        <div class="modal-content">
+            <h2>Reset Password</h2>
+            <div class="form-group">
+                <label for="current-password">Current Password</label>
+                <input type="password" id="current-password" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm new password">
+            </div>
+            <div class="modal-buttons">
+                <button id="password-reset-cancel" class="btn cancel-btn">Cancel</button>
+                <button id="password-reset-submit" class="btn submit-btn">Reset Password</button>
+            </div>
+            <p id="password-reset-error" class="error-message"></p>
+            <p id="password-reset-success" class="success-message"></p>
+        </div>
+    </div>
+
+    <!-- Assistive overlay for visually impaired users -->
+    <div id="assistive-overlay" class="assistive-overlay">
+        <div id="assistive-feedback" class="assistive-feedback"></div>
+    </div>
+    
+    <!-- Audio elements for notifications -->
+    <audio id="message-notification" preload="auto">
+        <source src="/sounds/notification.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="camera-shutter" preload="auto">
+        <source src="/sounds/camera-shutter.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/gestures.js"></script>
+    <script src="/js/speechSynthesis.js"></script>
+    <script src="/js/speechRecognition.js"></script>
+    <script src="/js/imageRecognition.js"></script>
+</body>
+</html> 
