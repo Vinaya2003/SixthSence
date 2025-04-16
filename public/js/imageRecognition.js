@@ -116,10 +116,10 @@ async function analyzeImage(imageBlob) {
         showAssistiveFeedback('Sending image to AI for analysis...');
         speakText('Analyzing what is around you. This might take a few seconds.');
         
-        // Check if server is available
+        // Check if server is available - use relative URL that works both locally and deployed
         let serverAvailable = true;
         try {
-            const serverCheck = await fetch('http://localhost:3000', { 
+            const serverCheck = await fetch('/', { 
                 method: 'HEAD',
                 timeout: 2000
             });
@@ -133,9 +133,9 @@ async function analyzeImage(imageBlob) {
             throw new Error("Server is not available");
         }
         
-        // Send to our server endpoint
+        // Send to our server endpoint - use relative URL that works in all environments
         console.log("Sending image to server for analysis...");
-        const response = await fetch('http://localhost:3000/api/analyze-image', {
+        const response = await fetch('/api/analyze-image', {
             method: 'POST',
             body: formData
         });
